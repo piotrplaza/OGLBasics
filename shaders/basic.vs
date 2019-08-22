@@ -5,8 +5,10 @@ in vec3 bCol;
 
 out vec3 vCol;
 
+uniform mat4 mvp = mat4(1.0);
+
 void main()
 {
 	vCol = bCol;
-	gl_Position = vec4(bPos, 1);
+	gl_Position = mvp * vec4(bPos, 1);
 }

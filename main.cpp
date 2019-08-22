@@ -10,6 +10,9 @@
 #include <gl/gl.h>
 
 #include <glm/vec3.hpp>
+#include <glm/mat4x4.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 #include "shaders.hpp"
 #include "tools.hpp"
@@ -19,6 +22,17 @@ const int width = 600;
 const int height = 600;
 
 shaders::ProgramId program;
+
+struct
+{
+	glm::mat4 mv { 1.0f };
+	glm::mat4 p { 1.0f };
+
+	glm::mat4 getMVP() const
+	{
+		return p * mv;
+	}
+} mvp;
 
 void Initialize()
 {
@@ -32,8 +46,6 @@ void Initialize()
 		{ {0, "bPos"}, {1, "bCol"} });
 }
 
-glm::vec3 v2 = { 0, 1, 0 };
-
 void RenderScene()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -41,13 +53,19 @@ void RenderScene()
 	const static std::vector<glm::vec3> c = {
 		{1, 0, 0},
 		{0, 1, 0},
-		{0, 0, 1}
+		{0, 0, 1},
+		{0, 0, 1},
+		{0, 1, 0},
+		{1, 0, 0}
 	};
 
 	std::vector<glm::vec3> v = {
 		{-1, -1, 0},
 		{1, -1, 0},
-		v2
+		{-1, 1, 0},
+		{-1, 1, 0},
+		{1, -1, 0},
+		{1, 1, 0}
 	};
 
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, v.data());
@@ -57,17 +75,29 @@ void RenderScene()
 	glEnableVertexAttribArray(1);
 
 	glUseProgram(program);
+	glUniformMatrix4fv(glGetUniformLocation(program, "mvp"), 1, GL_FALSE,
+		glm::value_ptr(mvp.getMVP()));
+
 	glDrawArrays(GL_TRIANGLES, 0, v.size());
 }
 
+float angleX = 0.0f;
+float angleY = 0.0f;
+
 void PrepareFrame()
 {
+	mvp.mv = glm::translate(glm::mat4( 1.0f ), { 0.0f, 0.0f, -4.0f });
+	mvp.mv = glm::rotate(mvp.mv, angleX, { 1.0f, 0.0f, 0.0f });
+	mvp.mv = glm::rotate(mvp.mv, angleY, { 0.0f, 1.0f, 0.0f });
+
 	RenderScene();
 }
 
 void ChangeSize(int w, int h)
 {
 	glViewport(0, 0, w, h);
+
+	mvp.p = glm::perspective(70.0f, (float)w / h, 1.0f, 1000.0f);
 }
 
 void HandleKeyboard(bool const * const keys)
@@ -76,19 +106,19 @@ void HandleKeyboard(bool const * const keys)
 
 	if (keys[VK_LEFT])
 	{
-		v2.x -= delta;
+		angleY -= delta;
 	}
 	if (keys[VK_RIGHT])
 	{
-		v2.x += delta;
-	}
-	if (keys[VK_DOWN])
-	{
-		v2.y -= delta;
+		angleY += delta;
 	}
 	if (keys[VK_UP])
 	{
-		v2.y += delta;
+		angleX -= delta;
+	}
+	if (keys[VK_DOWN])
+	{
+		angleX += delta;
 	}
 }
 
