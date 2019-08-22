@@ -11,11 +11,14 @@
 
 #include <glm/vec3.hpp>
 
+#include "shaders.hpp"
 #include "tools.hpp"
 
 const bool fullScreen = false;
 const int width = 600;
 const int height = 600;
+
+shaders::ProgramId program;
 
 void Initialize()
 {
@@ -24,11 +27,37 @@ void Initialize()
 
 	glEnable(GL_DEPTH_TEST);
 	glClearColor(0, 0, 0, 1);
+
+	program = shaders::LinkProgram(shaders::CompileShaders("shaders/basic.vs", "shaders/basic.fs"),
+		{ {0, "bPos"}, {1, "bCol"} });
 }
+
+glm::vec3 v2 = { 0, 1, 0 };
 
 void RenderScene()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	const static std::vector<glm::vec3> c = {
+		{1, 0, 0},
+		{0, 1, 0},
+		{0, 0, 1}
+	};
+
+	std::vector<glm::vec3> v = {
+		{-1, -1, 0},
+		{1, -1, 0},
+		v2
+	};
+
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, v.data());
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, c.data());
+
+	glEnableVertexAttribArray(0);
+	glEnableVertexAttribArray(1);
+
+	glUseProgram(program);
+	glDrawArrays(GL_TRIANGLES, 0, v.size());
 }
 
 void PrepareFrame()
@@ -43,6 +72,24 @@ void ChangeSize(int w, int h)
 
 void HandleKeyboard(bool const * const keys)
 {
+	const float delta = 0.01f;
+
+	if (keys[VK_LEFT])
+	{
+		v2.x -= delta;
+	}
+	if (keys[VK_RIGHT])
+	{
+		v2.x += delta;
+	}
+	if (keys[VK_DOWN])
+	{
+		v2.y -= delta;
+	}
+	if (keys[VK_UP])
+	{
+		v2.y += delta;
+	}
 }
 
 void SetDCPixelFormat(HDC hDC)

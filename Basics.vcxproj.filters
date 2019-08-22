@@ -5,6 +5,9 @@
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
+    <Filter Include="shaders">
+      <UniqueIdentifier>{30f22744-b0df-4d96-a79d-41648fcbe4bc}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -13,10 +16,24 @@
     <ClCompile Include="tools.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="shaders.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="tools.hpp">
       <Filter>src</Filter>
     </ClInclude>
+    <ClInclude Include="shaders.hpp">
+      <Filter>src</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="shaders\basic.fs">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="shaders\basic.vs">
+      <Filter>shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>
