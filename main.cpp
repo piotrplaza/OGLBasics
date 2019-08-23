@@ -46,6 +46,8 @@ void Initialize()
 		{ {0, "bPos"} });
 }
 
+int iterations = 1;
+
 void RenderScene()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -66,6 +68,7 @@ void RenderScene()
 	glUseProgram(program);
 	glUniformMatrix4fv(glGetUniformLocation(program, "mvp"), 1, GL_FALSE,
 		glm::value_ptr(mvp.getMVP()));
+	glUniform1i(glGetUniformLocation(program, "iterations"), iterations);
 
 	glDrawArrays(GL_TRIANGLES, 0, v.size());
 }
@@ -108,6 +111,14 @@ void HandleKeyboard(bool const * const keys)
 	if (keys[VK_DOWN])
 	{
 		angleX += delta;
+	}
+	if (keys[(int)'W'])
+	{
+		std::cout << "iterations: " << ++iterations << std::endl;
+	}
+	if (keys[(int)'Q'] && iterations > 1)
+	{
+		std::cout << "iterations: " << --iterations << std::endl;
 	}
 }
 
