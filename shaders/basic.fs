@@ -5,6 +5,8 @@ in vec3 vPos;
 out vec3 fragColor;
 
 uniform int iterations = 1;
+uniform float zoom = 0.5;
+uniform vec2 translation = vec2(0.0, 0.0);
 
 vec2 complexAdd(vec2 c1, vec2 c2)
 {
@@ -28,5 +30,8 @@ vec2 mandelbrot(vec2 p, int iterations)
 
 void main()
 {
-	fragColor = length(mandelbrot(vPos.xy * 2.0, iterations)) < 2.0 ? vec3(1.0, 1.0, 1.0) : vec3(0.0, 0.0, 0.0);
+	fragColor =
+	length(mandelbrot(vPos.xy / zoom + translation, iterations)) < 2.0
+	? vec3(1.0, 1.0, 1.0)
+	: vec3(0.0, 0.0, 0.0);
 }

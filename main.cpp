@@ -47,6 +47,8 @@ void Initialize()
 }
 
 int iterations = 1;
+float zoom = 0.5f;
+glm::vec2 translation = {0.0f, 0.0f};
 
 void RenderScene()
 {
@@ -69,6 +71,8 @@ void RenderScene()
 	glUniformMatrix4fv(glGetUniformLocation(program, "mvp"), 1, GL_FALSE,
 		glm::value_ptr(mvp.getMVP()));
 	glUniform1i(glGetUniformLocation(program, "iterations"), iterations);
+	glUniform1f(glGetUniformLocation(program, "zoom"), zoom);
+	glUniform2f(glGetUniformLocation(program, "translation"), translation.x, translation.y);
 
 	glDrawArrays(GL_TRIANGLES, 0, v.size());
 }
@@ -94,31 +98,65 @@ void ChangeSize(int w, int h)
 
 void HandleKeyboard(bool const * const keys)
 {
-	const float delta = 0.01f;
+	const float angleDelta = 0.01f;
+	const float zoomFactor = 1.01f;
+	const float translationFactor = 0.01f;
 
 	if (keys[VK_LEFT])
 	{
-		angleY -= delta;
+		angleY -= angleDelta;
 	}
 	if (keys[VK_RIGHT])
 	{
-		angleY += delta;
+		angleY += angleDelta;
 	}
 	if (keys[VK_UP])
 	{
-		angleX -= delta;
+		angleX -= angleDelta;
 	}
 	if (keys[VK_DOWN])
 	{
-		angleX += delta;
+		angleX += angleDelta;
 	}
 	if (keys[(int)'W'])
 	{
-		std::cout << "iterations: " << ++iterations << std::endl;
+		++iterations;
+		std::cout << "iterations: " << iterations << std::endl;
 	}
 	if (keys[(int)'Q'] && iterations > 1)
 	{
-		std::cout << "iterations: " << --iterations << std::endl;
+		--iterations;
+		std::cout << "iterations: " << iterations << std::endl;
+	}
+	if (keys[(int)'A'])
+	{
+		zoom *= zoomFactor;
+		std::cout << "zoom: " << zoom << std::endl;
+	}
+	if (keys[(int)'Z'])
+	{
+		zoom /= zoomFactor;
+		std::cout << "zoom: " << zoom << std::endl;
+	}
+	if (keys[(int)'J'])
+	{
+		translation.x -= translationFactor / zoom;
+		std::cout << "translation: " << translation.x << ";" << translation.y << std::endl;
+	}
+	if (keys[(int)'L'])
+	{
+		translation.x += translationFactor / zoom;
+		std::cout << "translation: " << translation.x << ";" << translation.y << std::endl;
+	}
+	if (keys[(int)'K'])
+	{
+		translation.y -= translationFactor / zoom;
+		std::cout << "translation: " << translation.x << ";" << translation.y << std::endl;
+	}
+	if (keys[(int)'I'])
+	{
+		translation.y += translationFactor / zoom;
+		std::cout << "translation: " << translation.x << ";" << translation.y << std::endl;
 	}
 }
 
