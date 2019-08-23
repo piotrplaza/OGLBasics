@@ -43,21 +43,12 @@ void Initialize()
 	glClearColor(0, 0, 0, 1);
 
 	program = shaders::LinkProgram(shaders::CompileShaders("shaders/basic.vs", "shaders/basic.fs"),
-		{ {0, "bPos"}, {1, "bCol"} });
+		{ {0, "bPos"} });
 }
 
 void RenderScene()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-	const static std::vector<glm::vec3> c = {
-		{1, 0, 0},
-		{0, 1, 0},
-		{0, 0, 1},
-		{0, 0, 1},
-		{0, 1, 0},
-		{1, 0, 0}
-	};
 
 	std::vector<glm::vec3> v = {
 		{-1, -1, 0},
@@ -69,10 +60,8 @@ void RenderScene()
 	};
 
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, v.data());
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, c.data());
 
 	glEnableVertexAttribArray(0);
-	glEnableVertexAttribArray(1);
 
 	glUseProgram(program);
 	glUniformMatrix4fv(glGetUniformLocation(program, "mvp"), 1, GL_FALSE,
@@ -86,9 +75,9 @@ float angleY = 0.0f;
 
 void PrepareFrame()
 {
-	mvp.mv = glm::translate(glm::mat4( 1.0f ), { 0.0f, 0.0f, -4.0f });
-	mvp.mv = glm::rotate(mvp.mv, angleX, { 1.0f, 0.0f, 0.0f });
-	mvp.mv = glm::rotate(mvp.mv, angleY, { 0.0f, 1.0f, 0.0f });
+	//mvp.mv = glm::translate(glm::mat4( 1.0f ), { 0.0f, 0.0f, -4.0f });
+	//mvp.mv = glm::rotate(mvp.mv, angleX, { 1.0f, 0.0f, 0.0f });
+	//mvp.mv = glm::rotate(mvp.mv, angleY, { 0.0f, 1.0f, 0.0f });
 
 	RenderScene();
 }
@@ -97,7 +86,7 @@ void ChangeSize(int w, int h)
 {
 	glViewport(0, 0, w, h);
 
-	mvp.p = glm::perspective(70.0f, (float)w / h, 1.0f, 1000.0f);
+	//mvp.p = glm::perspective(70.0f, (float)w / h, 1.0f, 1000.0f);
 }
 
 void HandleKeyboard(bool const * const keys)
