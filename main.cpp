@@ -47,6 +47,7 @@ void Initialize()
 }
 
 int fractalType = 0;
+int coloringType = 0;
 int iterations = 1;
 float zoom = 0.5f;
 glm::vec2 translation = {0.0f, 0.0f};
@@ -73,6 +74,7 @@ void RenderScene()
 	glUniformMatrix4fv(glGetUniformLocation(program, "mvp"), 1, GL_FALSE,
 		glm::value_ptr(mvp.getMVP()));
 	glUniform1i(glGetUniformLocation(program, "fractalType"), fractalType);
+	glUniform1i(glGetUniformLocation(program, "coloringType"), coloringType);
 	glUniform1i(glGetUniformLocation(program, "iterations"), iterations);
 	glUniform1f(glGetUniformLocation(program, "zoom"), zoom);
 	glUniform2f(glGetUniformLocation(program, "translation"), translation.x, translation.y);
@@ -132,6 +134,16 @@ void HandleKeyboard(bool const * const keys)
 	{
 		fractalType = 1;
 		std::cout << "fractalType: " << fractalType << std::endl;
+	}
+	if (keys[(int)'0'])
+	{
+		coloringType = 0;
+		std::cout << "coloringType: " << coloringType << std::endl;
+	}
+	if (keys[(int)'9'])
+	{
+		coloringType = 1;
+		std::cout << "coloringType: " << coloringType << std::endl;
 	}
 	if (keys[(int)'F'])
 	{

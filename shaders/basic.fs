@@ -5,6 +5,7 @@ in vec3 vPos;
 out vec3 fragColor;
 
 uniform int fractalType = 0;
+uniform int coloringType = 0;
 uniform int iterations = 1;
 uniform float zoom = 0.5;
 uniform vec2 translation = vec2(0.0, 0.0);
@@ -49,10 +50,30 @@ vec2 fractal(vec2 p)
 	}
 }
 
-void main()
+vec3 blackWhiteColoring(vec2 fractalResult)
 {
-	fragColor =
-	length(fractal(vPos.xy / zoom + translation)) < 2.0
+	return length(fractalResult) < 2.0
 	? vec3(1.0, 1.0, 1.0)
 	: vec3(0.0, 0.0, 0.0);
+}
+
+vec3 customColoring(vec2 fractalResult)
+{
+	fractalResult.x = abs(fractalResult.x);
+	fractalResult.y = abs(fractalResult.y);
+	return vec3(fractalResult.x, fractalResult.y, length(fractalResult));
+}
+
+vec3 coloring(vec2 fractalResult)
+{
+	switch(coloringType)
+	{
+		case 0: return blackWhiteColoring(fractalResult); break;
+		case 1: return customColoring(fractalResult); break;
+	}
+}
+
+void main()
+{
+	fragColor = coloring(fractal(vPos.xy / zoom + translation));
 }
