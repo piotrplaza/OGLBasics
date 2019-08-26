@@ -88,9 +88,9 @@ float angleY = 0.0f;
 
 void PrepareFrame()
 {
-	//mvp.mv = glm::translate(glm::mat4( 1.0f ), { 0.0f, 0.0f, -4.0f });
-	//mvp.mv = glm::rotate(mvp.mv, angleX, { 1.0f, 0.0f, 0.0f });
-	//mvp.mv = glm::rotate(mvp.mv, angleY, { 0.0f, 1.0f, 0.0f });
+	mvp.mv = glm::translate(glm::mat4( 1.0f ), { 0.0f, 0.0f, -2.0f });
+	mvp.mv = glm::rotate(mvp.mv, angleX, { 1.0f, 0.0f, 0.0f });
+	mvp.mv = glm::rotate(mvp.mv, angleY, { 0.0f, 1.0f, 0.0f });
 
 	RenderScene();
 }
@@ -99,7 +99,7 @@ void ChangeSize(int w, int h)
 {
 	glViewport(0, 0, w, h);
 
-	//mvp.p = glm::perspective(70.0f, (float)w / h, 1.0f, 1000.0f);
+	mvp.p = glm::perspective(70.0f, (float)w / h, 1.0f, 1000.0f);
 }
 
 void HandleKeyboard(bool const * const keys)
