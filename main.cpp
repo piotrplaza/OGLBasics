@@ -46,9 +46,11 @@ void Initialize()
 		{ {0, "bPos"} });
 }
 
+int fractalType = 0;
 int iterations = 1;
 float zoom = 0.5f;
 glm::vec2 translation = {0.0f, 0.0f};
+glm::vec2 juliaC = { -0.1, 0.65 };
 
 void RenderScene()
 {
@@ -70,9 +72,11 @@ void RenderScene()
 	glUseProgram(program);
 	glUniformMatrix4fv(glGetUniformLocation(program, "mvp"), 1, GL_FALSE,
 		glm::value_ptr(mvp.getMVP()));
+	glUniform1i(glGetUniformLocation(program, "fractalType"), fractalType);
 	glUniform1i(glGetUniformLocation(program, "iterations"), iterations);
 	glUniform1f(glGetUniformLocation(program, "zoom"), zoom);
 	glUniform2f(glGetUniformLocation(program, "translation"), translation.x, translation.y);
+	glUniform2f(glGetUniformLocation(program, "juliaC"), juliaC.x, juliaC.y);
 
 	glDrawArrays(GL_TRIANGLES, 0, v.size());
 }
@@ -101,6 +105,7 @@ void HandleKeyboard(bool const * const keys)
 	const float angleDelta = 0.01f;
 	const float zoomFactor = 1.01f;
 	const float translationFactor = 0.01f;
+	const float juliaCDelta = 0.00001f;
 
 	if (keys[VK_LEFT])
 	{
@@ -117,6 +122,36 @@ void HandleKeyboard(bool const * const keys)
 	if (keys[VK_DOWN])
 	{
 		angleX += angleDelta;
+	}
+	if (keys[(int)'1'])
+	{
+		fractalType = 0;
+		std::cout << "fractalType: " << fractalType << std::endl;
+	}
+	if (keys[(int)'2'])
+	{
+		fractalType = 1;
+		std::cout << "fractalType: " << fractalType << std::endl;
+	}
+	if (keys[(int)'F'])
+	{
+		juliaC.x -= juliaCDelta;
+		std::cout << "juliaC.x: " << juliaC.x << std::endl;
+	}
+	if (keys[(int)'H'])
+	{
+		juliaC.x += juliaCDelta;
+		std::cout << "juliaC.x: " << juliaC.x << std::endl;
+	}
+	if (keys[(int)'G'])
+	{
+		juliaC.y -= juliaCDelta;
+		std::cout << "juliaC.y: " << juliaC.y << std::endl;
+	}
+	if (keys[(int)'T'])
+	{
+		juliaC.y += juliaCDelta;
+		std::cout << "juliaC.y: " << juliaC.y << std::endl;
 	}
 	if (keys[(int)'W'])
 	{
@@ -156,6 +191,13 @@ void HandleKeyboard(bool const * const keys)
 	if (keys[(int)'I'])
 	{
 		translation.y += translationFactor / zoom;
+		std::cout << "translation: " << translation.x << ";" << translation.y << std::endl;
+	}
+	if (keys[VK_SPACE])
+	{
+		zoom = 0.5f;
+		translation = { 0.0f, 0.0f };
+		std::cout << "zoom: " << zoom << std::endl;
 		std::cout << "translation: " << translation.x << ";" << translation.y << std::endl;
 	}
 }
