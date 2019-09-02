@@ -46,6 +46,8 @@ const std::vector<unsigned> indices = {
 	1, 2, 3
 };
 
+GLuint vertexArray;
+
 void Initialize()
 {
 	const GLenum glewInitResult = glewInit();
@@ -54,17 +56,23 @@ void Initialize()
 	glEnable(GL_DEPTH_TEST);
 	glClearColor(0, 0, 0, 1);
 
-	GLuint vertexBuffer;
-	glGenBuffers(1, &vertexBuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(vertices.front()), vertices.data(), GL_STATIC_DRAW);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
-	glEnableVertexAttribArray(0);
+	glCreateVertexArrays(1, &vertexArray);
+	glBindVertexArray(vertexArray);
+		GLuint vertexBuffer;
+		glGenBuffers(1, &vertexBuffer);
+		glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
+		glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(vertices.front()), vertices.data(), GL_STATIC_DRAW);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
+		glEnableVertexAttribArray(0);
 
-	GLuint elementBuffer;
-	glGenBuffers(1, &elementBuffer);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementBuffer);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(indices.front()), indices.data(), GL_STATIC_DRAW);
+		GLuint elementBuffer;
+		glGenBuffers(1, &elementBuffer);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementBuffer);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(indices.front()), indices.data(), GL_STATIC_DRAW);
+	glBindVertexArray(0);
+
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
 	program = shaders::LinkProgram(shaders::CompileShaders("shaders/basic.vs", "shaders/basic.fs"),
 		{ {0, "bPos"} });
@@ -90,6 +98,8 @@ void RenderScene()
 	glUniform1f(glGetUniformLocation(program, "zoom"), zoom);
 	glUniform2f(glGetUniformLocation(program, "translation"), translation.x, translation.y);
 	glUniform2f(glGetUniformLocation(program, "juliaC"), juliaC.x, juliaC.y);
+
+	glBindVertexArray(vertexArray);
 
 	glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, nullptr);
 }
