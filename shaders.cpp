@@ -31,7 +31,7 @@ namespace shaders
 				const auto cSource = source.c_str();
 				GLint compileStatus;
 
-				glShaderSource(shader, 1, &cSource, NULL);
+				glShaderSource(shader, 1, &cSource, nullptr);
 				glCompileShader(shader);
 				glGetShaderiv(shader, GL_COMPILE_STATUS, &compileStatus);
 
@@ -39,7 +39,7 @@ namespace shaders
 				{
 					const unsigned int maxLogLength = 1024;
 					char shaderInfoLog[maxLogLength];
-					glGetShaderInfoLog(shader, maxLogLength, NULL, shaderInfoLog);
+					glGetShaderInfoLog(shader, maxLogLength, nullptr, shaderInfoLog);
 					glDeleteShader(shader);
 					throw std::runtime_error("Unable to compile " + shaderTypesToNames.at(shaderType)
 						+ " \"" + path + "\".\n" + shaderInfoLog);
@@ -79,7 +79,7 @@ namespace shaders
 		{
 			const unsigned int maxLogLength = 1024;
 			char programInfoLog[maxLogLength];
-			glGetProgramInfoLog(program, maxLogLength, NULL, programInfoLog);
+			glGetProgramInfoLog(program, maxLogLength, nullptr, programInfoLog);
 			glDeleteProgram(program);
 			throw std::runtime_error("Unable to link program.\n"s + programInfoLog);
 		}

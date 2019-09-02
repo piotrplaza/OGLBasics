@@ -57,17 +57,19 @@ void RenderScene()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	std::vector<glm::vec3> v = {
+	std::vector<glm::vec3> vertices = {
 		{-1, -1, 0},
 		{1, -1, 0},
 		{-1, 1, 0},
-		{-1, 1, 0},
-		{1, -1, 0},
 		{1, 1, 0}
 	};
 
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, v.data());
+	std::vector<unsigned> indices = {
+		0, 1, 2,
+		1, 2, 3
+	};
 
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, vertices.data());
 	glEnableVertexAttribArray(0);
 
 	glUseProgram(program);
@@ -80,7 +82,7 @@ void RenderScene()
 	glUniform2f(glGetUniformLocation(program, "translation"), translation.x, translation.y);
 	glUniform2f(glGetUniformLocation(program, "juliaC"), juliaC.x, juliaC.y);
 
-	glDrawArrays(GL_TRIANGLES, 0, v.size());
+	glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, indices.data());
 }
 
 float angleX = 0.0f;
