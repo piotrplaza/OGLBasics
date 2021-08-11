@@ -25,14 +25,29 @@ shaders::ProgramId program;
 
 struct
 {
-	glm::mat4 mv { 1.0f };
-	glm::mat4 p { 1.0f };
+	glm::mat4 view{ 1.0f };
+	glm::mat4 projection{ 1.0f };
 
-	glm::mat4 getMVP() const
+	glm::mat4 getVP() const
 	{
-		return p * mv;
+		return projection * view;
+	}
+
+	glm::mat4 getMVP(const glm::mat4& model) const
+	{
+		return getVP() * model;
 	}
 } mvp;
+
+struct
+{
+	glm::mat4 rotation{ 1.0f };
+
+	glm::mat4 get() const
+	{
+		return rotation;
+	}
+} model;
 
 const std::vector<glm::vec3> vertices = {
 	{-1, -1, 0},
@@ -76,6 +91,8 @@ void Initialize()
 
 	program = shaders::LinkProgram(shaders::CompileShaders("shaders/basic.vs", "shaders/basic.fs"),
 		{ {0, "bPos"} });
+
+	mvp.view = glm::translate(glm::mat4(1.0f), { 0.0f, 0.0f, -2.0f });
 }
 
 int fractalType = 0;
@@ -91,7 +108,7 @@ void RenderScene()
 
 	glUseProgram(program);
 	glUniformMatrix4fv(glGetUniformLocation(program, "mvp"), 1, GL_FALSE,
-		glm::value_ptr(mvp.getMVP()));
+		glm::value_ptr(mvp.getMVP(model.get())));
 	glUniform1i(glGetUniformLocation(program, "fractalType"), fractalType);
 	glUniform1i(glGetUniformLocation(program, "coloringType"), coloringType);
 	glUniform1i(glGetUniformLocation(program, "iterations"), iterations);
@@ -104,15 +121,8 @@ void RenderScene()
 	glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, nullptr);
 }
 
-float angleX = 0.0f;
-float angleY = 0.0f;
-
 void PrepareFrame()
 {
-	mvp.mv = glm::translate(glm::mat4( 1.0f ), { 0.0f, 0.0f, -2.0f });
-	mvp.mv = glm::rotate(mvp.mv, angleX, { 1.0f, 0.0f, 0.0f });
-	mvp.mv = glm::rotate(mvp.mv, angleY, { 0.0f, 1.0f, 0.0f });
-
 	RenderScene();
 }
 
@@ -120,7 +130,7 @@ void ChangeSize(int w, int h)
 {
 	glViewport(0, 0, w, h);
 
-	mvp.p = glm::perspective(70.0f, (float)w / h, 1.0f, 1000.0f);
+	mvp.projection = glm::perspective(70.0f, (float)w / h, 1.0f, 1000.0f);
 }
 
 void HandleKeyboard(bool const * const keys)
@@ -132,19 +142,19 @@ void HandleKeyboard(bool const * const keys)
 
 	if (keys[VK_LEFT])
 	{
-		angleY -= angleDelta;
+		model.rotation = glm::rotate(glm::mat4(1.0f), -angleDelta, { 0.0f, 1.0f, 0.0f }) * model.rotation;
 	}
 	if (keys[VK_RIGHT])
 	{
-		angleY += angleDelta;
+		model.rotation = glm::rotate(glm::mat4(1.0f), angleDelta, { 0.0f, 1.0f, 0.0f }) * model.rotation;
 	}
 	if (keys[VK_UP])
 	{
-		angleX -= angleDelta;
+		model.rotation = glm::rotate(glm::mat4(1.0f), -angleDelta, { 1.0f, 0.0f, 0.0f }) * model.rotation;
 	}
 	if (keys[VK_DOWN])
 	{
-		angleX += angleDelta;
+		model.rotation = glm::rotate(glm::mat4(1.0f), angleDelta, { 1.0f, 0.0f, 0.0f }) * model.rotation;
 	}
 	if (keys[(int)'1'])
 	{
@@ -324,15 +334,17 @@ LRESULT CALLBACK WndProc(HWND hWnd,
 	return 0l;
 }
 
-int APIENTRY WinMain(HINSTANCE hInstance,
-					 HINSTANCE hPrevInstance,
-					 LPSTR lpCmdLine,
-					 int nCmdShow)
+int APIENTRY WinMain(
+	_In_ HINSTANCE hInstance,
+	_In_opt_ HINSTANCE hPrevInstance,
+	_In_ LPSTR lpCmdLine,
+	_In_ int nShowCmd
+)
 {
 	const LPCTSTR lpszAppName = "OpenGL window";
 	const int winPosX = 10, winPosY = 10;
 
-	WNDCLASS wc;
+	WNDCLASS wc{};
 
 	wc.style = CS_HREDRAW | CS_VREDRAW;
 	wc.lpfnWndProc = (WNDPROC)WndProc;
